@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>0/1 Knapsack Simulator</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #FFB347, #FFE0B2, #FFD1DC);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #FFB347;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 42px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            color: #FFB347;
+            margin-top: 20px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 600;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px 10px 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 100px;
+            background: #f8f8f8;
+            color: #333;
+            font-weight: normal;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        button {
+            background-color: #FFD1DC;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            margin: 10px 10px 10px 0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #FFE0B2;
+            transform: scale(1.03);
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+            color: #333;
+            border-radius: 5px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #FFB347;
+            color: white;
+        }
+
+        tr:nth-child(even) td {
+            background: #f8f8f8;
+        }
+
+        #result {
+            margin-top: 20px;
+            background: #f0f0f0;
+            border-left: 5px solid #FFD1DC;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .wrapper {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .footer {
+            background-color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9em;
+            color: #777;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+        }
+
+        .highlight {
+            background-color: #ffffcc;
+            font-weight: bold;
+        }
+
+        .explain {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .highlight {
+    background-color: #a6f7a1 !important;
+    font-weight: bold;
+}
+
+.include {
+    background-color: #f9f7d5 !important;
+    position: relative;
+}
+
+.exclude {
+    background-color: #f0f0f0 !important;
+}
+
+.explain {
+    font-size: 10px;
+    color: #555;
+    display: block;
+    margin-top: 3px;
+}
+
+    </style>
+
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+        <h1>0/1 Knapsack Simulator</h1>
+        <div class="form-group">
+            <label>Capacity:</label>
+            <input type="number" id="capacity">
+        </div>
+        <h3>Add Items</h3>
+        <div class="form-group">
+            <label>Weight:</label>
+            <input type="number" id="weight">
+            <label>Value:</label>
+            <input type="number" id="value">
+            <button onclick="addItem()">+ Add Item</button>
+        </div>
+
+        <table id="itemsTable">
+            <tr><th>Item</th><th>Weight</th><th>Value</th></tr>
+        </table>
+
+        <button onclick="solveKnapsack()">Solve Knapsack</button>
+        <button onclick="restSim()">Reset</button>
+
+        <div id="result"></div>
+    </div>
+
+    <footer class="footer">
+        Muskan Shaikh (16010123208)<br>
+        Naman Agarwal (16010123209)<br>
+        Mridul Bindal (16010123207)<br>from C-3
+    </footer>
+</div>
+
+<script>
+    let items=[];
+
+    function addItem() 
+    {
+        const weight=parseInt(document.getElementById('weight').value);
+        const value=parseInt(document.getElementById('value').value);
+        if(!isNaN(weight)&&!isNaN(value)) 
+        {
+            items.push({weight,value});
+            const table=document.getElementById('itemsTable');
+            const row=table.insertRow();
+            row.innerHTML=<td>${items.length}</td><td>${weight}</td><td>${value}</td>;
+            document.getElementById('weight').value='';
+            document.getElementById('value').value='';
+        }
+    }
+
+    async function solveKnapsack() 
+    {
+    const capacity = parseInt(document.getElementById('capacity').value);
+    const n = items.length;
+    const dp = Array.from({ length: n + 1 }, () => Array(capacity + 1).fill(0));
+
+    let table = '<table><tr><th>Item \\ Capacity</th>';
+    for (let w = 0; w <= capacity; w++) table += <th>${w}</th>;
+    table += '</tr>';
+
+    for (let i = 0; i <= n; i++) 
+    {
+        table += <tr><td>${i}</td>;
+        for (let w = 0; w <= capacity; w++) 
+        {
+            table += <td id="cell-${i}-${w}">0</td>;
+        }
+        table += '</tr>';
+    }
+    table += '</table>';
+    document.getElementById('result').innerHTML = table;
+
+    for (let i = 1; i <= n; i++) {
+        for (let w = 0; w <= capacity; w++) 
+        {
+            const includeCell = document.getElementById(cell-${i - 1}-${w - items[i - 1].weight});
+            const excludeCell = document.getElementById(cell-${i - 1}-${w});
+            const currentCell = document.getElementById(cell-${i}-${w});
+
+            document.querySelectorAll('.highlight, .include, .exclude').forEach(el => {
+                el.classList.remove('highlight', 'include', 'exclude');
+                if (el.querySelector('.explain')) el.querySelector('.explain').remove();
+            });
+
+            if (items[i - 1].weight <= w) 
+            {
+                const include = items[i - 1].value + dp[i - 1][w - items[i - 1].weight];
+                const exclude = dp[i - 1][w];
+                dp[i][w] = Math.max(include, exclude);
+
+                currentCell.classList.add("highlight");
+                if (include >= exclude) {
+                    includeCell.classList.add("include");
+                    includeCell.innerHTML += <span class="explain">+${items[i - 1].value}</span>;
+                } else {
+                    excludeCell.classList.add("exclude");
+                }
+
+                currentCell.innerHTML = ${dp[i][w]};
+            } 
+            else 
+            {
+                dp[i][w] = dp[i - 1][w];
+                excludeCell.classList.add("exclude");
+                currentCell.classList.add("highlight");
+                currentCell.innerHTML = ${dp[i][w]}<span class="explain">Too heavy</span>;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    let w = capacity, selected = [];
+    for (let i = n; i > 0; i--) 
+    {
+        if (dp[i][w] !== dp[i - 1][w]) 
+        {
+            selected.push(i);
+            w -= items[i - 1].weight;
+        }
+    }
+
+    document.getElementById('result').innerHTML += 
+    
+        <br><strong>Maximum Value:</strong> ${dp[n][capacity]}<br>
+        <strong>Selected Items:</strong> ${selected.reverse().join(', ') || "None"}
+    ;
+}
+
+
+    function restSim() 
+    {
+        items=[];
+        document.getElementById('weight').value='';
+        document.getElementById('value').value='';
+        document.getElementById('capacity').value='';
+        document.getElementById('itemsTable').innerHTML='<tr><th>Item</th><th>Weight</th><th>Value</th></tr>';
+        document.getElementById('result').innerHTML='';
+    }
+</script>
+</body>
+</html>
